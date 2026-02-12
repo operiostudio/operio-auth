@@ -58,7 +58,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Input styling with Eye Icon wrapper */
         .input-group {
             position: relative;
             margin-bottom: 16px;
@@ -89,12 +88,20 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
             color: #666;
-            font-size: 1.2rem;
             user-select: none;
+            transition: color 0.2s;
+        }
+        
+        .toggle-password:hover {
+            color: #3498db;
         }
 
-        /* Button: Launch App - Consistent Styling */
         .btn {
             background-color: #ffffff;
             color: #121212;
@@ -118,7 +125,6 @@
         .btn:hover { background-color: #f0f0f0; transform: translateY(-2px); }
         .btn:active { transform: scale(0.98); }
 
-        /* Footer dots & tag */
         .footer-tag {
             margin-top: 60px;
             color: #aaaaaa;
@@ -199,16 +205,19 @@
 
     const done = () => loader.style.display = 'none';
 
-    // Toggle Password Visibility Function
+    // SVG Icons
+    const eyeOpen = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px; height:20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.183.182.548.182 1.118 0 1.666L19.964 13.911C18.577 18.087 14.64 21 12 21c-4.638 0-8.573-3.007-9.963-7.183z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" /></svg>`;
+    const eyeClosed = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px; height:20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
+
     window.toggleView = function(id) {
         const input = document.getElementById(id);
         const icon = input.nextElementSibling;
         if (input.type === "password") {
             input.type = "text";
-            icon.innerHTML = "👁️‍🗨️"; // Symbol for hiding
+            icon.innerHTML = eyeClosed;
         } else {
             input.type = "password";
-            icon.innerHTML = "👁️"; // Symbol for showing
+            icon.innerHTML = eyeOpen;
         }
     };
 
@@ -239,11 +248,11 @@
                     actionArea.innerHTML = `
                         <div class="input-group">
                             <input type="password" id="p1" placeholder="New Password">
-                            <span class="toggle-password" onclick="toggleView('p1')">👁️</span>
+                            <span class="toggle-password" onclick="toggleView('p1')">${eyeOpen}</span>
                         </div>
                         <div class="input-group">
                             <input type="password" id="p2" placeholder="Confirm Password">
-                            <span class="toggle-password" onclick="toggleView('p2')">👁️</span>
+                            <span class="toggle-password" onclick="toggleView('p2')">${eyeOpen}</span>
                         </div>
                         <button onclick="updatePass()" class="btn">Launch App</button>
                     `;
