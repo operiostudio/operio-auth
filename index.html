@@ -243,7 +243,7 @@
             case 'resetPassword':
                 auth.verifyPasswordResetCode(oobCode).then(email => {
                     done();
-                    titleEl.innerText = "New Password";
+                    titleEl.innerText = "Reset Password";
                     messageEl.innerText = `Securing account for ${email}`;
                     actionArea.innerHTML = `
                         <div class="input-group">
