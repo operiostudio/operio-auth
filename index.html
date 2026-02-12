@@ -192,7 +192,8 @@
     const actionArea = document.getElementById('action-area');
     const loader = document.getElementById('loader');
 
-    const done = () => loader.style.display = 'none';
+    const done = () => { loader.style.display = 'none'; };
+    const showLoading = () => { loader.style.display = 'block'; };
 
     const eyeOpen = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px; height:20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.183.182.548.182 1.118 0 1.666L19.964 13.911C18.577 18.087 14.64 21 12 21c-4.638 0-8.573-3.007-9.963-7.183z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" /></svg>`;
     const eyeClosed = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px; height:20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
@@ -216,7 +217,33 @@
             if (!document.hidden) {
                 alert("Please make sure Operio Pro is installed.");
             }
-        }, 2000);
+        }, 2500);
+    };
+
+    window.updatePass = function() {
+        const p1 = document.getElementById('p1').value;
+        const p2 = document.getElementById('p2').value;
+        
+        if(p1.length < 6) return alert("Password must be at least 6 characters!");
+        if(p1 !== p2) return alert("Passwords do not match!");
+
+        showLoading();
+        actionArea.innerHTML = ''; 
+
+        auth.confirmPasswordReset(oobCode, p1).then(() => {
+            done();
+            titleEl.innerText = "Success";
+            messageEl.innerText = "Password updated. Launching Operio Pro...";
+            actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Manual Launch</button>`;
+
+            setTimeout(() => {
+                launchApp();
+            }, 1500);
+        }).catch(e => {
+            done();
+            alert(e.message);
+            location.reload(); 
+        });
     };
 
     if (!oobCode) {
@@ -229,9 +256,9 @@
                 auth.applyActionCode(oobCode).then(() => {
                     done();
                     titleEl.innerText = "Verified";
-                    messageEl.innerText = "Your account is activated. Launching app...";
+                    messageEl.innerText = "Account activated. Launching app...";
                     actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Launch App</button>`;
-                    launchApp(); // Auto-launch
+                    setTimeout(launchApp, 1000);
                 }).catch(() => {
                     done();
                     titleEl.innerText = "Expired";
@@ -268,44 +295,11 @@
                     titleEl.innerText = "Recovered";
                     messageEl.innerText = "Email restored. Launching app...";
                     actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Launch App</button>`;
-                    launchApp(); // Auto-launch
+                    setTimeout(launchApp, 1000);
                 }).catch(() => { done(); titleEl.innerText = "Error"; });
                 break;
         }
     }
-
-window.updatePass = function() {
-    const p1 = document.getElementById('p1').value;
-    const p2 = document.getElementById('p2').value;
-    
-    if(p1.length < 6) return alert("Password must be at least 6 characters!");
-    if(p1 !== p2) return alert("Passwords do not match!");
-
-    // Arătăm loader-ul din nou în timp ce procesăm
-    loader.style.display = 'block';
-    actionArea.innerHTML = ''; 
-
-    auth.confirmPasswordReset(oobCode, p1).then(() => {
-        done(); // Ascundem loader-ul
-        titleEl.innerText = "Success";
-        messageEl.innerText = "Password updated. Redirecting to Operio Pro...";
-        
-        // Adăugăm butonul de rezervă imediat
-        actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Manual Launch</button>`;
-
-        // Așteptăm 1.5 secunde înainte de a lansa aplicația
-        // Acest delay "confirmă" vizual utilizatorului că operațiunea a reușit
-        setTimeout(() => {
-            launchApp();
-        }, 1500);
-
-    }).catch(e => {
-        done();
-        alert(e.message);
-        // Dacă e eroare, refacem butoanele de input (sau lăsăm userul să încerce iar)
-        location.reload(); 
-    });
-}
 </script>
 </body>
 </html>
