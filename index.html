@@ -274,21 +274,38 @@
         }
     }
 
-    window.updatePass = function() {
-        const p1 = document.getElementById('p1').value;
-        const p2 = document.getElementById('p2').value;
-        
-        if(p1.length < 6) return alert("Password must be at least 6 characters!");
-        if(p1 !== p2) return alert("Passwords do not match!");
+window.updatePass = function() {
+    const p1 = document.getElementById('p1').value;
+    const p2 = document.getElementById('p2').value;
+    
+    if(p1.length < 6) return alert("Password must be at least 6 characters!");
+    if(p1 !== p2) return alert("Passwords do not match!");
 
-        auth.confirmPasswordReset(oobCode, p1).then(() => {
-            titleEl.innerText = "Success";
-            messageEl.innerText = "Password updated. Launching Operio Pro...";
-            // Eliminăm butonul redundant și declanșăm direct launch-ul
-            actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Manual Launch</button>`;
-            launchApp(); 
-        }).catch(e => alert(e.message));
-    }
+    // Arătăm loader-ul din nou în timp ce procesăm
+    loader.style.display = 'block';
+    actionArea.innerHTML = ''; 
+
+    auth.confirmPasswordReset(oobCode, p1).then(() => {
+        done(); // Ascundem loader-ul
+        titleEl.innerText = "Success";
+        messageEl.innerText = "Password updated. Redirecting to Operio Pro...";
+        
+        // Adăugăm butonul de rezervă imediat
+        actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Manual Launch</button>`;
+
+        // Așteptăm 1.5 secunde înainte de a lansa aplicația
+        // Acest delay "confirmă" vizual utilizatorului că operațiunea a reușit
+        setTimeout(() => {
+            launchApp();
+        }, 1500);
+
+    }).catch(e => {
+        done();
+        alert(e.message);
+        // Dacă e eroare, refacem butoanele de input (sau lăsăm userul să încerce iar)
+        location.reload(); 
+    });
+}
 </script>
 </body>
 </html>
