@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operio Auth | Security</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background-color: #0b0b0b;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #141414;
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid #222;
+        }
+        .logo { font-size: 2.2rem; font-weight: 900; color: #ca4cce; margin-bottom: 1.5rem; letter-spacing: -1px; }
+        h2 { font-size: 1.4rem; margin-bottom: 0.8rem; font-weight: 700; }
+        p { color: #888; line-height: 1.6; margin-bottom: 2rem; font-size: 0.95rem; }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background: #1c1c1c;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input:focus { border-color: #ca4cce; outline: none; }
+        .btn {
+            background-color: #ca4cce;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .btn:hover { background-color: #b33bb5; transform: translateY(-2px); }
+        #loader { border: 3px solid #222; border-top: 3px solid #ca4cce; border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .success-icon { color: #4CAF50; font-size: 3rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">OPERIO</div>
+    <div id="loader"></div>
+    <div id="content">
+        <h2 id="title">Verifying Request...</h2>
+        <p id="message">Please wait while we secure your account.</p>
+        <div id="action-area"></div>
+    </div>
+</div>
+
+<script>
+    // CONFIGURAREA TA REALA
+    const firebaseConfig = {
+        apiKey: "AIzaSyBTBR_8IJt2acR60Ar0eJI2_DmbajR8jVQ",
+        authDomain: "operiostudio.firebaseapp.com",
+        projectId: "operiostudio",
+        storageBucket: "operiostudio.firebasestorage.app",
+        messagingSenderId: "658608089594",
+        appId: "1:658608089594:web:cc743429c5531f72d91c43",
+        measurementId: "G-F7CKKCYBEZ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const oobCode = urlParams.get('oobCode');
+
+    const titleEl = document.getElementById('title');
+    const messageEl = document.getElementById('message');
+    const actionArea = document.getElementById('action-area');
+    const loader = document.getElementById('loader');
+
+    function hideLoader() { loader.style.display = 'none'; }
+
+    // GESTIONARE MODURI
+    if (!oobCode) {
+        titleEl.innerText = "Invalid Link";
+        messageEl.innerText = "The security code is missing. Please request a new link from the app.";
+        hideLoader();
+    } else {
+        switch (mode) {
+            case 'verifyEmail':
+                handleVerify();
+                break;
+            case 'resetPassword':
+                handleReset();
+                break;
+            case 'recoverEmail':
+                handleRecover();
+                break;
+            default:
+                titleEl.innerText = "Error";
+                messageEl.innerText = "Unknown operation mode.";
+                hideLoader();
+        }
+    }
+
+    function handleVerify() {
+        auth.applyActionCode(oobCode).then(() => {
+            hideLoader();
+            titleEl.innerHTML = '<div class="success-icon">✓</div>Email Verified';
+            messageEl.innerText = "Your email has been confirmed. You can now return to Operio.";
+            actionArea.innerHTML = `<a href="operio://login" class="btn">Open Operio App</a>`;
+        }).catch(err => {
+            hideLoader();
+            titleEl.innerText = "Link Expired";
+            messageEl.innerText = "This link has already been used or has expired.";
+        });
+    }
+
+    function handleReset() {
+        auth.verifyPasswordResetCode(oobCode).then(email => {
+            hideLoader();
+            titleEl.innerText = "Reset Password";
+            messageEl.innerText = `Enter a new password for ${email}`;
+            actionArea.innerHTML = `
+                <input type="password" id="pass1" placeholder="New Password">
+                <input type="password" id="pass2" placeholder="Confirm New Password">
+                <button onclick="doReset()" class="btn">Update Password</button>
+            `;
+        }).catch(() => {
+            hideLoader();
+            titleEl.innerText = "Invalid Link";
+            messageEl.innerText = "Password reset link is no longer valid.";
+        });
+    }
+
+    window.doReset = function() {
+        const p1 = document.getElementById('pass1').value;
+        const p2 = document.getElementById('pass2').value;
+        if (p1 !== p2) return alert("Passwords do not match!");
+        if (p1.length < 6) return alert("Password must be at least 6 characters.");
+
+        auth.confirmPasswordReset(oobCode, p1).then(() => {
+            titleEl.innerText = "Success!";
+            messageEl.innerText = "Your password has been updated.";
+            actionArea.innerHTML = `<a href="operio://login" class="btn">Login to App</a>`;
+        }).catch(err => alert(err.message));
+    }
+
+    function handleRecover() {
+        auth.checkActionCode(oobCode).then(info => {
+            return auth.applyActionCode(oobCode);
+        }).then(() => {
+            hideLoader();
+            titleEl.innerText = "Email Restored";
+            messageEl.innerText = "Your account has been secured and reverted to your previous email.";
+            actionArea.innerHTML = `<a href="operio://login" class="btn">Open App</a>`;
+        }).catch(err => {
+            hideLoader();
+            titleEl.innerText = "Error";
+            messageEl.innerText = "Unable to recover previous email.";
+        });
+    }
+</script>
+</body>
+</html>
