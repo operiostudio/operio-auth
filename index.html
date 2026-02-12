@@ -7,10 +7,12 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
         body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: #121212; /* bg */
+            color: #e0e0e0; /* text */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,102 +20,158 @@
             margin: 0;
             overflow: hidden;
         }
+
         .container {
             text-align: center;
             width: 100%;
-            max-width: 380px;
-            padding: 20px;
+            max-width: 400px;
+            padding: 40px 24px;
             box-sizing: border-box;
         }
+
+        /* Logo: Operio .PRO */
         .brand {
-            font-size: 2.8rem;
+            font-size: 3rem;
             font-weight: 900;
             letter-spacing: -1.5px;
-            margin-bottom: 0.5rem;
+            margin-bottom: 10px;
             color: #ffffff;
         }
-        .accent-text { color: #3498db; }
+        .accent-text { 
+            color: #3498db; /* accent color */
+            margin-left: 8px; /* Spatiul cerut intre Operio. si PRO */
+        }
 
-        h2 { font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; color: #ffffff; }
-        p { color: #aaaaaa; font-size: 0.9rem; line-height: 1.5; margin-bottom: 30px; padding: 0 10px; }
-        
+        h2 { 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        p { 
+            color: #aaaaaa; /* subText */
+            font-size: 0.9rem; 
+            line-height: 1.6; 
+            margin-bottom: 40px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Input styling with Eye Icon wrapper */
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px 20px;
+            border-radius: 14px;
+            border: 1px solid #333; /* border color */
+            background: #1e1e1e; /* block color */
+            color: #ffffff;
+            box-sizing: border-box;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            font-size: 1.2rem;
+            user-select: none;
+        }
+
+        /* Button: Launch App - Consistent Styling */
         .btn {
             background-color: #ffffff;
             color: #121212;
-            padding: 16px 20px;
-            border-radius: 12px;
+            padding: 18px 20px;
+            border-radius: 14px;
             text-decoration: none;
             display: block;
             font-weight: 800;
             font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             border: none;
-            transition: transform 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .btn:active { transform: scale(0.97); }
-
-        input {
             width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            border: 1px solid #333;
-            background: #1e1e1e;
-            color: white;
             box-sizing: border-box;
-            font-size: 1rem;
-            text-align: center;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            cursor: pointer;
         }
-        input:focus { border-color: #00D2FF; outline: none; }
 
+        .btn:hover { background-color: #f0f0f0; transform: translateY(-2px); }
+        .btn:active { transform: scale(0.98); }
+
+        /* Footer dots & tag */
         .footer-tag {
             margin-top: 60px;
             color: #aaaaaa;
-            font-size: 0.7rem;
-            font-weight: 700;
+            font-size: 0.75rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            opacity: 0.7
+            gap: 15px;
+            opacity: 0.6;
         }
+
         .dot { 
-            width: 5px; 
-            height: 5px; 
-            background-color: #3498db;
-            border-radius: 50%; 
-            box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+            width: 6px; 
+            height: 6px; 
+            background-color: #3498db; 
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
         }
 
         #loader { 
             border: 2px solid #333; 
-            border-top: 2px solid #00D2FF; 
+            border-top: 2px solid #3498db; 
             border-radius: 50%; 
-            width: 28px; height: 28px; 
+            width: 30px; height: 30px; 
             animation: spin 0.8s linear infinite; 
             margin: 20px auto; 
         }
+
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="brand">Operio<span class="accent-text">.{ }PRO</span></div>
+    <div class="brand">Operio.<span class="accent-text">PRO</span></div>
     
     <div id="loader"></div>
     
     <div id="content">
         <h2 id="title">Security Check</h2>
-        <p id="message">Unlocking professional strategic insights for your business scale.</p>
+        <p id="message">Validating your credentials for professional strategic scaling.</p>
         <div id="action-area"></div>
     </div>
 
     <div class="footer-tag">
         <div class="dot"></div>
-        Operio | Built for scale
+        Built for scale
         <div class="dot"></div>
     </div>
 </div>
@@ -142,6 +200,19 @@
 
     const done = () => loader.style.display = 'none';
 
+    // Toggle Password Visibility Function
+    window.toggleView = function(id) {
+        const input = document.getElementById(id);
+        const icon = input.nextElementSibling;
+        if (input.type === "password") {
+            input.type = "text";
+            icon.innerHTML = "👁️‍🗨️"; // Symbol for hiding
+        } else {
+            input.type = "password";
+            icon.innerHTML = "👁️"; // Symbol for showing
+        }
+    };
+
     if (!oobCode) {
         titleEl.innerText = "Link Invalid";
         messageEl.innerText = "Please request a new link from the Operio app.";
@@ -151,37 +222,44 @@
             case 'verifyEmail':
                 auth.applyActionCode(oobCode).then(() => {
                     done();
-                    titleEl.innerText = "Email Verified";
-                    messageEl.innerText = "Your strategic account is now ready.";
+                    titleEl.innerText = "Verified";
+                    messageEl.innerText = "Your account is activated and ready.";
                     actionArea.innerHTML = `<a href="operio://login" class="btn">Launch App</a>`;
                 }).catch(() => {
                     done();
-                    titleEl.innerText = "Link Expired";
-                    messageEl.innerText = "This link is no longer valid.";
+                    titleEl.innerText = "Expired";
+                    messageEl.innerText = "This security link has expired.";
                 });
                 break;
 
             case 'resetPassword':
                 auth.verifyPasswordResetCode(oobCode).then(email => {
                     done();
-                    titleEl.innerText = "Reset Password";
-                    messageEl.innerText = `New password for ${email}`;
+                    titleEl.innerText = "New Password";
+                    messageEl.innerText = `Securing account for ${email}`;
                     actionArea.innerHTML = `
-                        <input type="password" id="p1" placeholder="New Password">
+                        <div class="input-group">
+                            <input type="password" id="p1" placeholder="New Password">
+                            <span class="toggle-password" onclick="toggleView('p1')">👁️</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="p2" placeholder="Confirm Password">
+                            <span class="toggle-password" onclick="toggleView('p2')">👁️</span>
+                        </div>
                         <button onclick="updatePass()" class="btn">Launch App</button>
                     `;
                 }).catch(() => {
                     done();
                     titleEl.innerText = "Error";
-                    messageEl.innerText = "Invalid security code.";
+                    messageEl.innerText = "Security code is invalid.";
                 });
                 break;
                 
             case 'recoverEmail':
                 auth.applyActionCode(oobCode).then(() => {
                     done();
-                    titleEl.innerText = "Email Restored";
-                    messageEl.innerText = "Account secured.";
+                    titleEl.innerText = "Recovered";
+                    messageEl.innerText = "Email address has been restored.";
                     actionArea.innerHTML = `<a href="operio://login" class="btn">Launch App</a>`;
                 }).catch(() => { done(); titleEl.innerText = "Error"; });
                 break;
@@ -189,11 +267,15 @@
     }
 
     window.updatePass = function() {
-        const p = document.getElementById('p1').value;
-        if(p.length < 6) return alert("Password too short!");
-        auth.confirmPasswordReset(oobCode, p).then(() => {
+        const p1 = document.getElementById('p1').value;
+        const p2 = document.getElementById('p2').value;
+        
+        if(p1.length < 6) return alert("Password must be at least 6 characters!");
+        if(p1 !== p2) return alert("Passwords do not match!");
+
+        auth.confirmPasswordReset(oobCode, p1).then(() => {
             titleEl.innerText = "Success";
-            messageEl.innerText = "Your password has been updated.";
+            messageEl.innerText = "Password updated. You can now enter the app.";
             actionArea.innerHTML = `<a href="operio://login" class="btn">Launch App</a>`;
         }).catch(e => alert(e.message));
     }
