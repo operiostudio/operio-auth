@@ -11,8 +11,8 @@
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background-color: #121212; /* bg */
-            color: #e0e0e0; /* text */
+            background-color: #121212;
+            color: #e0e0e0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -51,7 +51,7 @@
         }
 
         p { 
-            color: #aaaaaa; /* subText */
+            color: #aaaaaa;
             font-size: 0.9rem; 
             line-height: 1.6; 
             margin-bottom: 40px;
@@ -68,8 +68,8 @@
             width: 100%;
             padding: 18px 20px;
             border-radius: 14px;
-            border: 1px solid #333; /* border color */
-            background: #1e1e1e; /* block color */
+            border: 1px solid #333;
+            background: #1e1e1e;
             color: #ffffff;
             box-sizing: border-box;
             font-size: 1rem;
@@ -95,11 +95,6 @@
             height: 22px;
             color: #666;
             user-select: none;
-            transition: color 0.2s;
-        }
-        
-        .toggle-password:hover {
-            color: #3498db;
         }
 
         .btn {
@@ -144,7 +139,6 @@
             height: 6px; 
             background-color: #3498db; 
             border-radius: 50%;
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.6);
         }
 
         #loader { 
@@ -157,23 +151,18 @@
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="brand">Operio.<span class="accent-text">PRO</span></div>
-    
     <div id="loader"></div>
-    
     <div id="content">
         <h2 id="title">Security Check</h2>
         <p id="message">Validating your credentials for professional strategic scaling.</p>
         <div id="action-area"></div>
     </div>
-
     <div class="footer-tag">
         <div class="dot"></div>
         Built for scale
@@ -205,7 +194,6 @@
 
     const done = () => loader.style.display = 'none';
 
-    // SVG Icons
     const eyeOpen = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px; height:20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.183.182.548.182 1.118 0 1.666L19.964 13.911C18.577 18.087 14.64 21 12 21c-4.638 0-8.573-3.007-9.963-7.183z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" /></svg>`;
     const eyeClosed = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px; height:20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>`;
 
@@ -221,15 +209,12 @@
         }
     };
 
-    // Funcție de lansare aplicație folosind schema din app.json
     window.launchApp = function() {
         const deepLink = "com.operio.profitsimulator://login";
         window.location.href = deepLink;
-        
-        // Fallback în caz că aplicația nu e instalată
         setTimeout(() => {
             if (!document.hidden) {
-                alert("Please make sure Operio Pro is installed on your device.");
+                alert("Please make sure Operio Pro is installed.");
             }
         }, 2000);
     };
@@ -244,8 +229,9 @@
                 auth.applyActionCode(oobCode).then(() => {
                     done();
                     titleEl.innerText = "Verified";
-                    messageEl.innerText = "Your account is activated and ready.";
+                    messageEl.innerText = "Your account is activated. Launching app...";
                     actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Launch App</button>`;
+                    launchApp(); // Auto-launch
                 }).catch(() => {
                     done();
                     titleEl.innerText = "Expired";
@@ -257,7 +243,7 @@
                 auth.verifyPasswordResetCode(oobCode).then(email => {
                     done();
                     titleEl.innerText = "Reset Password";
-                    messageEl.innerText = `Securing account for ${email}`;
+                    messageEl.innerText = `New password for ${email}`;
                     actionArea.innerHTML = `
                         <div class="input-group">
                             <input type="password" id="p1" placeholder="New Password">
@@ -280,8 +266,9 @@
                 auth.applyActionCode(oobCode).then(() => {
                     done();
                     titleEl.innerText = "Recovered";
-                    messageEl.innerText = "Email address has been restored.";
+                    messageEl.innerText = "Email restored. Launching app...";
                     actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Launch App</button>`;
+                    launchApp(); // Auto-launch
                 }).catch(() => { done(); titleEl.innerText = "Error"; });
                 break;
         }
@@ -296,8 +283,10 @@
 
         auth.confirmPasswordReset(oobCode, p1).then(() => {
             titleEl.innerText = "Success";
-            messageEl.innerText = "Password updated. You can now enter the app.";
-            actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Launch App</button>`;
+            messageEl.innerText = "Password updated. Launching Operio Pro...";
+            // Eliminăm butonul redundant și declanșăm direct launch-ul
+            actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Manual Launch</button>`;
+            launchApp(); 
         }).catch(e => alert(e.message));
     }
 </script>
