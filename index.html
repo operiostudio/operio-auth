@@ -221,6 +221,19 @@
         }
     };
 
+    // Funcție de lansare aplicație folosind schema din app.json
+    window.launchApp = function() {
+        const deepLink = "com.operio.profitsimulator://login";
+        window.location.href = deepLink;
+        
+        // Fallback în caz că aplicația nu e instalată
+        setTimeout(() => {
+            if (!document.hidden) {
+                alert("Please make sure Operio Pro is installed on your device.");
+            }
+        }, 2000);
+    };
+
     if (!oobCode) {
         titleEl.innerText = "Invalid Link";
         messageEl.innerText = "Please request a new link from the Operio app.";
@@ -232,7 +245,7 @@
                     done();
                     titleEl.innerText = "Verified";
                     messageEl.innerText = "Your account is activated and ready.";
-                    actionArea.innerHTML = `<a href="operio://login" class="btn">Launch App</a>`;
+                    actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Launch App</button>`;
                 }).catch(() => {
                     done();
                     titleEl.innerText = "Expired";
@@ -254,7 +267,7 @@
                             <input type="password" id="p2" placeholder="Confirm Password">
                             <span class="toggle-password" onclick="toggleView('p2')">${eyeOpen}</span>
                         </div>
-                        <button onclick="updatePass()" class="btn">Launch App</button>
+                        <button onclick="updatePass()" class="btn">Update & Launch</button>
                     `;
                 }).catch(() => {
                     done();
@@ -268,7 +281,7 @@
                     done();
                     titleEl.innerText = "Recovered";
                     messageEl.innerText = "Email address has been restored.";
-                    actionArea.innerHTML = `<a href="operio://login" class="btn">Launch App</a>`;
+                    actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Launch App</button>`;
                 }).catch(() => { done(); titleEl.innerText = "Error"; });
                 break;
         }
@@ -284,7 +297,7 @@
         auth.confirmPasswordReset(oobCode, p1).then(() => {
             titleEl.innerText = "Success";
             messageEl.innerText = "Password updated. You can now enter the app.";
-            actionArea.innerHTML = `<a href="operio://login" class="btn">Launch App</a>`;
+            actionArea.innerHTML = `<button onclick="launchApp()" class="btn">Launch App</button>`;
         }).catch(e => alert(e.message));
     }
 </script>
